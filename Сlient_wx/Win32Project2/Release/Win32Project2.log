@@ -1,0 +1,4 @@
+﻿  Source.cpp
+c:\users\sergey\documents\visual studio 2015\projects\сlient_wx\win32project2\Header.h(3): fatal error C1083: Не удается открыть файл включение: wx/wx.h: No such file or directory
+  _main.cpp
+c:\users\sergey\documents\visual studio 2015\projects\сlient_wx\win32project2\Header.h(3): fatal error C1083: Не удается открыть файл включение: wx/wx.h: No such file or directory
