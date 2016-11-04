@@ -1,2 +1,3 @@
 ﻿  Source.cpp
-  Win32Project2.vcxproj -> C:\Users\Sergey\documents\visual studio 2015\Projects\Сlient_wx\Debug\Win32Project2.exe
+c:\users\sergey\desktop\gith\dz1\сlient_wx\win32project2\source.cpp(82): warning C4101: wxBuff: неиспользованная локальная переменная
+  Win32Project2.vcxproj -> C:\Users\Sergey\Desktop\gith\DZ1\Сlient_wx\Debug\Win32Project2.exe

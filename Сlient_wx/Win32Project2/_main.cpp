@@ -7,8 +7,8 @@ class MyApp : public wxApp
 public:
 	bool OnInit()
 	{
-		GUI_CL* GUI = new GUI_CL;
-		GUI->Show();
+		GUI_CL* GUI = new GUI_CL(wxT("Client"));
+		GUI->Show(true);
 		return true;
 	}
 };
