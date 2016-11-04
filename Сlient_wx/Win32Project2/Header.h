@@ -35,6 +35,7 @@ public:
 	GUI_CL(const wxString& title);
 	void ConnectToServer(wxCommandEvent& event);
 	void SendMsgToServer(wxCommandEvent& event);
+	void ShutClient(wxCommandEvent& event);
 	//void GetMsgFServer(wxSocketClient *_client, wxTextCtrl *_textbox);
 	//static void GetMsgFServer(wxSocketClient *_client, wxTextCtrl *_textbox);
 
@@ -44,6 +45,7 @@ private:
 	wxPanel *_MainPanel;
 	wxButton *_sendButton;
 	wxBitmapButton *_conButton;
+	wxButton *_disButton;
 	wxTextCtrl *_textbox;
 	wxTextCtrl *_sendbox;
 	wxString buffer;
@@ -51,7 +53,7 @@ private:
 	MyThread *thread;
 	wxCriticalSection m_pThreadCS;   
 	friend class MyThread;	
-	char *_name;
+	wxString _name;
 	wxBoxSizer *_sizer1;
 	wxBoxSizer *_sizer2;
 	wxBoxSizer *_sizer3;

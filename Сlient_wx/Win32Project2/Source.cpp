@@ -12,21 +12,25 @@ GUI_CL::GUI_CL(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefault
 	wxBitmap conIcon;
 	conIcon.CopyFromIcon(_conIcon);
 	_conButton = new wxBitmapButton(_MainPanel,wxID_UP,conIcon,wxPoint(600,100));
+	_disButton = new wxButton(_MainPanel, wxID_APPLY, "disconnect", wxPoint(600, 400), wxDefaultSize);
 	Connect(wxID_UP, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GUI_CL::ConnectToServer));
 	//Connect(wxID_UP, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GUI_CL::GetMsgFServer));
 	_textbox = new wxTextCtrl(_MainPanel, -1, wxT(""), wxPoint(0, 0),	wxSize(500, 150), wxTE_MULTILINE | wxTE_READONLY);
 	_sendbox = new wxTextCtrl(_MainPanel, -1, wxT(""), wxPoint(250, 250),wxSize(500, 150), wxTE_PROCESS_ENTER | wxTE_MULTILINE);
-	_sendbox->Disable();
-	_textbox->Disable();
 	_sendButton = new wxButton(_MainPanel, wxID_ABOUT, "send", wxPoint(600, 500), wxDefaultSize);
+	//_sendbox->Disable();
+	_textbox->Disable();
 	_sendButton->Disable();
+	_disButton->Disable();
 	Connect(-1, wxEVT_TEXT_ENTER, wxCommandEventHandler(GUI_CL::SendMsgToServer));
 	Connect(wxID_ABOUT, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GUI_CL::SendMsgToServer));
+	Connect(wxID_APPLY, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GUI_CL::ShutClient));
 	_sizer1 = new wxBoxSizer(wxVERTICAL);
 	_sizer2 = new wxBoxSizer(wxHORIZONTAL);
 	//_sizer3 = new wxBoxSizer(wxHORIZONTAL);
 	//_sizer3->Add(new wxPanel(_MainPanel,-1));
 	_sizer2->Add(_conButton, 0, wxALL, 1);
+	_sizer2->Add(_disButton, 0, wxALL, 1);
 	_sizer2->AddStretchSpacer(1);
 	_sizer2->Add(_sendButton, 0, wxALL, 1);
 	_sizer1->Add(_textbox, 2, wxALL | wxEXPAND, 1);
@@ -36,6 +40,17 @@ GUI_CL::GUI_CL(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefault
 	_sizer1->Fit(this);
 	_sizer1->SetSizeHints(this);
 	Centre();
+}
+
+void GUI_CL::ShutClient(wxCommandEvent& event)
+{
+	_client->Shutdown();
+	//_client->ShutdownOutput();
+	_disButton->Disable();
+	_sendbox->Disable();
+	_textbox->Disable();
+	_sendButton->Disable();
+	_conButton->Enable();
 }
 
 void GUI_CL::SendMsgToServer(wxCommandEvent& event)
@@ -54,10 +69,15 @@ void GUI_CL::ConnectToServer(wxCommandEvent& event)
 	addr.Service(service);
 	_client = new wxSocketClient(wxSOCKET_NONE);
 	_client->Connect(addr, true);
+	_name = wxT("default");
+	_name = _sendbox->GetValue();
+	_sendbox->Clear();
+	_client->Write(_name, strlen(_name));
 	_conButton->Enable(false);
 	_sendbox->Enable();
 	_textbox->Enable();
 	_sendButton->Enable();
+	_disButton->Enable();
 	thread = new MyThread(_textbox, _client);
 	if (thread->Create(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR)
 	{
