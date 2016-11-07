@@ -44,8 +44,10 @@ GUI_CL::GUI_CL(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefault
 
 void GUI_CL::ShutClient(wxCommandEvent& event)
 {
-	_client->Shutdown();
-	//_client->ShutdownOutput();
+	_client->ShutdownOutput();
+	_client->Discard();
+	thread->Kill();
+	_client->Destroy();
 	_disButton->Disable();
 	_sendbox->Disable();
 	_textbox->Disable();
