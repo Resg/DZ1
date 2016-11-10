@@ -1,3 +1,28 @@
 ﻿  Server_boost.cpp
-c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\server_boost.cpp(43): warning C4930: boost::asio::ip::tcp::acceptor acceptor(boost::asio::io_service): функция с прототипом не вызвана (предполагалось определение переменной?)
-  Server_boost.vcxproj -> C:\Users\Sergey\Desktop\gith\DZ1\Server_boost\Debug\Server_boost.exe
+c:\users\sergey\documents\visual studio 2015\projects\libs\boost_1_62_0\boost\bind\bind.hpp(259): error C2664: "void (boost::shared_ptr<_client>)": невозможно преобразовать аргумент 1 из "boost::shared_ptr<_client> " в "boost::shared_ptr<_client>"
+  c:\users\sergey\documents\visual studio 2015\projects\libs\boost_1_62_0\boost\bind\bind.hpp(259): note: Конструктор для class "boost::shared_ptr<_client>" объявлен как "explicit"
+  c:\users\sergey\documents\visual studio 2015\projects\libs\boost_1_62_0\boost\bind\bind.hpp(1294): note: см. ссылку на создание экземпляров функции шаблон при компиляции "void boost::_bi::list1<boost::_bi::value<T>>::operator ()<void(__cdecl *)(boost::shared_ptr<_client>),boost::_bi::list0>(boost::_bi::type<void>,F &,A &,int)"
+          with
+          [
+              T=boost::shared_ptr<_client> *,
+              F=void (__cdecl *)(boost::shared_ptr<_client>),
+              A=boost::_bi::list0
+          ]
+  c:\users\sergey\documents\visual studio 2015\projects\libs\boost_1_62_0\boost\bind\bind.hpp(1294): note: см. ссылку на создание экземпляров функции шаблон при компиляции "void boost::_bi::list1<boost::_bi::value<T>>::operator ()<void(__cdecl *)(boost::shared_ptr<_client>),boost::_bi::list0>(boost::_bi::type<void>,F &,A &,int)"
+          with
+          [
+              T=boost::shared_ptr<_client> *,
+              F=void (__cdecl *)(boost::shared_ptr<_client>),
+              A=boost::_bi::list0
+          ]
+  c:\users\sergey\documents\visual studio 2015\projects\libs\boost_1_62_0\boost\bind\bind.hpp(1292): note: при компиляции функции-члена "<Нет данных>" класса <Нет данных>
+  c:\users\sergey\documents\visual studio 2015\projects\libs\boost_1_62_0\boost\thread\detail\thread.hpp(116): note: см. ссылку на создание экземпляров функции шаблон при компиляции "void boost::_bi::bind_t<void,void (__cdecl *)(boost::shared_ptr<_client>),boost::_bi::list1<boost::_bi::value<T>>>::operator ()(void)"
+          with
+          [
+              T=boost::shared_ptr<_client> *
+          ]
+  c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\server_boost.cpp(52): note: см. ссылку на создание экземпляров класса шаблон при компиляции "boost::_bi::bind_t<void,void (__cdecl *)(boost::shared_ptr<_client>),boost::_bi::list1<boost::_bi::value<T>>>"
+          with
+          [
+              T=boost::shared_ptr<_client> *
+          ]
