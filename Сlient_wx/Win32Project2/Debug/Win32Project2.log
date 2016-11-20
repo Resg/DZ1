@@ -1,3 +1,5 @@
-﻿  Source.cpp
+﻿  _main.cpp
+  Source.cpp
 c:\users\sergey\desktop\gith\dz1\сlient_wx\win32project2\source.cpp(104): warning C4101: wxBuff: неиспользованная локальная переменная
+  Создание кода...
   Win32Project2.vcxproj -> C:\Users\Sergey\Desktop\gith\DZ1\Сlient_wx\Debug\Win32Project2.exe

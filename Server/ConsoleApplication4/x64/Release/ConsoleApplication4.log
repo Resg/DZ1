@@ -1,0 +1,15 @@
+﻿  ConsoleApplication4.cpp
+ConsoleApplication4.cpp(27): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+ConsoleApplication4.cpp(53): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+ConsoleApplication4.cpp(64): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+ConsoleApplication4.cpp(67): warning C4312: приведение типов: преобразование из "int" в "LPVOID" большего размера
+ConsoleApplication4.obj : error LNK2001: неразрешенный внешний символ "__imp_recv"
+ConsoleApplication4.obj : error LNK2001: неразрешенный внешний символ "__imp_send"
+ConsoleApplication4.obj : error LNK2001: неразрешенный внешний символ "__imp_WSAStartup"
+ConsoleApplication4.obj : error LNK2001: неразрешенный внешний символ "__imp_getaddrinfo"
+ConsoleApplication4.obj : error LNK2001: неразрешенный внешний символ "__imp_socket"
+ConsoleApplication4.obj : error LNK2001: неразрешенный внешний символ "__imp_bind"
+ConsoleApplication4.obj : error LNK2001: неразрешенный внешний символ "__imp_listen"
+ConsoleApplication4.obj : error LNK2001: неразрешенный внешний символ "__imp_freeaddrinfo"
+ConsoleApplication4.obj : error LNK2001: неразрешенный внешний символ "__imp_accept"
+C:\Users\Sergey\Desktop\gith\DZ1\Server\x64\Release\ConsoleApplication4.exe : fatal error LNK1120: неразрешенных внешних элементов: 9
