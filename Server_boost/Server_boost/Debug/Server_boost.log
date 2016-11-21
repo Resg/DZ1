@@ -1,4 +1,3 @@
 ﻿  Server_boost.cpp
-c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\server_boost.cpp(30): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(90): note:  см. объявление "strcat"
+c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\_client.h(77): warning C4018: <=: несоответствие типов со знаком и без знака
   Server_boost.vcxproj -> C:\Users\Sergey\Desktop\gith\DZ1\Server_boost\Debug\Server_boost.exe

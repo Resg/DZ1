@@ -51,7 +51,7 @@ GUI_CL::GUI_CL() : wxFrame(NULL, wxID_ANY, wxT("Client"), wxDefaultPosition, wxS
 
 void GUI_CL::ShutClient(wxCommandEvent& event)
 {
-	_client->Shutdown();
+	_client->ShutdownOutput();
 	_client->Discard();
 	thread->Kill();
 	_client->Destroy();
@@ -114,14 +114,15 @@ void *MyThread::Entry()
 
 void GetMsgFServer(wxSocketClient *_client, wxTextCtrl *_textbox, FILE *history)
 {
-	char *_buffer = new char[4096];
+	BYTE *_buffer = new BYTE[4096];
 	for (;; Sleep(100))
 	{
 		memset(_buffer, 0, 4096);
 		_client->Read(_buffer, 4096);
-		fwrite(_buffer, sizeof(char), strlen(_buffer), history);
-		fwrite("\n", sizeof(char), 1, history);
-		*_textbox << (_buffer);
+		ByteBlock datablock = Decrypt(_buffer);
+		/*fwrite(_buffer, sizeof(char), strlen(_buffer), history);
+		fwrite("\n", sizeof(char), 1, history);*/
+		*_textbox << (datablock.byte_ptr());
 		*_textbox << ("\n");
 	}
 	delete _buffer;
@@ -146,14 +147,18 @@ ByteBlock Encrypt(BYTE *_buffer)
 {
 	ByteBlock _bytebstr1(_buffer, 4096);
 	ByteBlock _bytebstr2;
-	hex_representation(_bytebstr1);
+	//hex_representation(_bytebstr1);
 	std::vector<ByteBlock> bytevect=split_blocks(_bytebstr1, 16);
 	std::vector<ByteBlock>::iterator _iter= bytevect.begin();
 	//ByteBlock _bytebstr2(_buffer, sizeof(_buffer));
 	BYTE key[] = "8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef";
 	ByteBlock _key(key, 32);
 	Kuznyechik kuz(_key);
-	kuz.encrypt(*_iter, _bytebstr2);
+	for (_iter = bytevect.begin(); _iter < bytevect.end(); _iter++)
+	{
+		kuz.encrypt(*_iter, *_iter);
+	}
+	_bytebstr2 = join_blocks(bytevect);
 	//_buffer = _bytebstr2.byte_ptr();
 	return  _bytebstr2;
 	//_buffer = _bytebstr1.byte_ptr();
@@ -161,5 +166,21 @@ ByteBlock Encrypt(BYTE *_buffer)
 
 ByteBlock Decrypt(BYTE *_buffer)
 {
-
+	ByteBlock _bytebstr1(_buffer, 4096);
+	ByteBlock _bytebstr2;
+	//std::string a=_buffer;
+	//hex_to_bytes(_bytebstr1.byte_ptr())
+	std::vector<ByteBlock> bytevect = split_blocks(_bytebstr1, 16);
+	std::vector<ByteBlock>::iterator _iter = bytevect.begin();
+	//ByteBlock _bytebstr2(_buffer, sizeof(_buffer));
+	BYTE key[] = "8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef";
+	ByteBlock _key(key, 32);
+	Kuznyechik kuz(_key);
+	for (_iter = bytevect.begin(); _iter < bytevect.end(); _iter++)
+	{
+		kuz.decrypt(*_iter, *_iter);
+	}
+	_bytebstr2 = join_blocks(bytevect);
+	//_buffer = _bytebstr2.byte_ptr();
+	return  _bytebstr2;
 }
