@@ -7,9 +7,12 @@
 #include <wx/sckipc.h>
 #include <wx/socket.h>
 #include <wx/textdlg.h>
+#include <wx/menu.h>
 #include "Kuznyechik.hpp"
 #include "mycrypto.hpp"
 #endif 
+
+
 
 void GetMsgFServer(wxSocketClient *_client, wxTextCtrl *_textbox, FILE *history);
 BYTE *wxSToStr(wxString _buffer, BYTE *_nullptr);
@@ -24,11 +27,32 @@ public:
 	}
 	
 	virtual void *Entry();
-protected:
+private:
 	wxTextCtrl *_textbox;
 	wxSocketClient *_client;
 };
-
+class MyDialog : public wxDialog
+{
+public:
+	MyDialog(wxFrame *a);
+	void _okclick(wxCommandEvent& event);
+	wxString &IP() { return _ip; }
+	wxString &NAME() { return _name; }
+	wxString &SERV() { return _serv; }
+private:
+	wxPanel *_dPanel;
+	wxButtonBase *_okButton;
+	wxTextCtrl *_ipText;
+	wxTextCtrl *_servText;
+	wxTextCtrl *_nickText;
+	wxBoxSizer *_sizer1;
+	wxBoxSizer *_sizer2;
+	wxBoxSizer *_sizer3;
+	wxString _ip;
+	wxString _name;
+	wxString _serv;
+	DECLARE_EVENT_TABLE()
+};
 class GUI_CL : public wxFrame
 {
 public:
@@ -37,6 +61,7 @@ public:
 	void ConnectToServer(wxCommandEvent& event);
 	void SendMsgToServer(wxCommandEvent& event);
 	void ShutClient(wxCommandEvent& event);
+	void ChangeSettings(wxCommandEvent& event);
 
 private:
 	wxSocketClient *_client;
@@ -58,8 +83,13 @@ private:
 	wxBoxSizer *_sizer3;
 	wxTextEntryDialog *_dial1;
 	wxTextEntryDialog *_dial2;
+	MyDialog *_MyDialog;
 	wxTextEntryDialog *_dial3;
 	wxString ip;
 	wxString service;
+	wxMenuBar *_menubar;
+	wxMenu *_menu;
+	
 };
+
 

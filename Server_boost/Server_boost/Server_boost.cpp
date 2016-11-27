@@ -12,54 +12,14 @@ typedef boost::shared_ptr<_client> client_ptr;
 typedef std::vector<client_ptr> array;
 array connections;
 
-ByteBlock Encrypt(BYTE *_buffer)
-{
-	ByteBlock _bytebstr1(_buffer, 4096);
-	ByteBlock _bytebstr2;
-	hex_representation(_bytebstr1);
-	std::vector<ByteBlock> bytevect = split_blocks(_bytebstr1, 16);
-	std::vector<ByteBlock>::iterator _iter = bytevect.begin();
-	//ByteBlock _bytebstr2(_buffer, sizeof(_buffer));
-	BYTE key[] = "8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef";
-	ByteBlock _key(key, 32);
-	Kuznyechik kuz(_key);
-	for (_iter = bytevect.begin(); _iter < bytevect.end(); _iter++)
-	{
-		kuz.encrypt(*_iter, *_iter);
-	}
-	_bytebstr2 = join_blocks(bytevect);
-	//_buffer = _bytebstr2.byte_ptr();
-	return  _bytebstr2;
-	//_buffer = _bytebstr1.byte_ptr();
-}
 
-ByteBlock Decrypt(BYTE *_buffer)
-{
-	ByteBlock _bytebstr1(_buffer, 4096);
-	ByteBlock _bytebstr2;
-	//std::string a=_buffer;
-	//hex_to_bytes(_bytebstr1.byte_ptr())
-	std::vector<ByteBlock> bytevect = split_blocks(_bytebstr1, 16);
-	std::vector<ByteBlock>::iterator _iter = bytevect.begin();
-	//ByteBlock _bytebstr2(_buffer, sizeof(_buffer));
-	BYTE key[] = "8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef";
-	ByteBlock _key(key, 32);
-	Kuznyechik kuz(_key);
-	for (_iter = bytevect.begin(); _iter < bytevect.end(); _iter++)
-	{
-		kuz.decrypt(*_iter, *_iter);
-	}
-	_bytebstr2 = join_blocks(bytevect);
-	//_buffer = _bytebstr2.byte_ptr();
-	return  _bytebstr2;
-}
 
 int con_count;
 
 void client_session(client_ptr client)
 {
-	BYTE _newdata[4096];
-	memset(_newdata, 0, 4096);
+	BYTE _newdata[1024];
+	memset(_newdata, 0, 1024);
 	client->sock().read_some(buffer(_newdata));
 	client->username(_newdata);
 	try
@@ -68,7 +28,7 @@ void client_session(client_ptr client)
 		{
 
 			client->_prepData();
-			memset(_newdata, 0, 4096);
+			memset(_newdata, 0, 1024);
 			size_t len = client->sock().read_some(buffer(_newdata));
 			if (len > 0)
 			{
@@ -80,7 +40,8 @@ void client_session(client_ptr client)
 				for (array::iterator b = connections.begin(), e = connections.end(); b != e; ++b)
 				{
 					//write((*b)->sock(), buffer(client->username(), client->username().size));
-					write((*b)->sock(), buffer(datablock.byte_ptr(), datablock.size()));
+					//write((*b)->sock(), buffer(datablock.byte_ptr(), datablock.size()));
+					(*b)->sock().write_some(buffer(datablock.byte_ptr(), datablock.size()));
 				}
 			}
 			std::cout << client->_data() << std::endl;
@@ -90,8 +51,11 @@ void client_session(client_ptr client)
 	}
 	catch (std::exception& e)
 	{
+		
 		std::cerr << e.what() << std::endl;
 		std::cout << "client disconnected" << std::endl;
+		array::iterator b = find(connections.begin(), connections.end(), client);
+		connections.erase(b);
 	}
 }
 

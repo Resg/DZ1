@@ -1,3 +1,11 @@
 ﻿  Server_boost.cpp
-c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\_client.h(77): warning C4018: <=: несоответствие типов со знаком и без знака
+  Создание кода...
+  Компиляция...
+  Source.cpp
+c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\source.cpp(25): warning C4018: <=: несоответствие типов со знаком и без знака
+c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\source.cpp(31): warning C4305: инициализация: усечение из "int" к "BYTE"
+c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\source.cpp(31): warning C4309: инициализация: усечение константного значения
+c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\source.cpp(32): warning C4305: инициализация: усечение из "int" к "BYTE"
+c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\source.cpp(32): warning C4309: инициализация: усечение константного значения
+  Создание кода...
   Server_boost.vcxproj -> C:\Users\Sergey\Desktop\gith\DZ1\Server_boost\Debug\Server_boost.exe

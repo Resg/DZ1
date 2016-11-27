@@ -2,23 +2,23 @@
 #include "Header.h"
 FILE *history;
 void GetMsgFServer(wxSocketClient *_client, wxTextCtrl *_textbox, FILE *history);
+bool handle = 1;
 
 GUI_CL::GUI_CL() : wxFrame(NULL, wxID_ANY, wxT("Client"), wxDefaultPosition, wxSize(700, 600))
 {
-	
+	_MyDialog = new MyDialog(this);
+	_MyDialog->ShowModal();
 	_MainPanel = new wxPanel(this,- 1);
-	_dial1 = new wxTextEntryDialog(this, wxT("Enter ip"), wxT("IP"), wxT("127.0.0.1"), wxOK |wxCENTRE, wxPoint(780, 440));
-	_dial1->ShowModal();
-	ip = _dial1->GetValue();
-	_dial1->Destroy();
-	_dial2 = new wxTextEntryDialog(this, wxT("Enter service"), wxT("Service"), wxT("7770"), wxOK , wxPoint(780, 440));
-	_dial2->ShowModal();
-	service = _dial2->GetValue();
-	_dial2->Destroy();
-	_dial3 = new wxTextEntryDialog(this, wxT("Enter Nickname"), wxT("Nickname"), wxT("default"), wxOK , wxPoint(780, 440));
-	_dial3->ShowModal();
-	_name = _dial3->GetValue();
-	_dial3->Destroy();
+	ip = _MyDialog->IP();
+	service = _MyDialog->SERV();
+	_name = _MyDialog->NAME();
+	_MyDialog->Destroy();
+	_menubar = new wxMenuBar;
+	_menu = new wxMenu;
+	_menu->Append(wxID_CONVERT, wxT("Settings"));
+	_menubar->Append(_menu, wxT("Menu"));
+	SetMenuBar(_menubar);
+	Connect(wxID_CONVERT, wxEVT_COMMAND_MENU_SELECTED,	wxCommandEventHandler(GUI_CL::ChangeSettings));
 	wxIcon _conIcon(wxT("connect"));
 	wxBitmap conIcon;
 	conIcon.CopyFromIcon(_conIcon);
@@ -63,10 +63,21 @@ void GUI_CL::ShutClient(wxCommandEvent& event)
 	fclose(history);
 }
 
+void GUI_CL::ChangeSettings(wxCommandEvent& event)
+{
+	_MyDialog = new MyDialog(this);
+	_MyDialog->ShowModal();
+	_MainPanel = new wxPanel(this, -1);
+	ip = _MyDialog->IP();
+	service = _MyDialog->SERV();
+	_name = _MyDialog->NAME();
+	_MyDialog->Destroy();
+}
+
 void GUI_CL::SendMsgToServer(wxCommandEvent& event)
 {
 	buffer = _sendbox->GetValue();
-	BYTE *_strbuff=new BYTE[4096];
+	BYTE *_strbuff=new BYTE[1024];
 	/*if (buffer.size() >= 16)
 		_strbuff = new BYTE[buffer.size() + 1];
 	else
@@ -74,7 +85,7 @@ void GUI_CL::SendMsgToServer(wxCommandEvent& event)
 	wxSToStr(buffer, _strbuff);
 	ByteBlock asd = Encrypt(_strbuff);
 	_strbuff = asd.byte_ptr();
-	_client->Write(_strbuff, 4096);
+	_client->Write(_strbuff, 1024);
 	_sendbox->Clear();
 	//delete _strbuff;
 }
@@ -114,11 +125,11 @@ void *MyThread::Entry()
 
 void GetMsgFServer(wxSocketClient *_client, wxTextCtrl *_textbox, FILE *history)
 {
-	BYTE *_buffer = new BYTE[4096];
+	BYTE *_buffer = new BYTE[1024];
 	for (;; Sleep(100))
 	{
-		memset(_buffer, 0, 4096);
-		_client->Read(_buffer, 4096);
+		memset(_buffer, 0, 1024);
+		_client->Read(_buffer, 1024);
 		ByteBlock datablock = Decrypt(_buffer);
 		/*fwrite(_buffer, sizeof(char), strlen(_buffer), history);
 		fwrite("\n", sizeof(char), 1, history);*/
@@ -145,7 +156,7 @@ BYTE *wxSToStr(wxString _buffer, BYTE *_nullptr)
 
 ByteBlock Encrypt(BYTE *_buffer)
 {
-	ByteBlock _bytebstr1(_buffer, 4096);
+	ByteBlock _bytebstr1(_buffer, 1024);
 	ByteBlock _bytebstr2;
 	//hex_representation(_bytebstr1);
 	std::vector<ByteBlock> bytevect=split_blocks(_bytebstr1, 16);
@@ -166,7 +177,7 @@ ByteBlock Encrypt(BYTE *_buffer)
 
 ByteBlock Decrypt(BYTE *_buffer)
 {
-	ByteBlock _bytebstr1(_buffer, 4096);
+	ByteBlock _bytebstr1(_buffer, 1024);
 	ByteBlock _bytebstr2;
 	//std::string a=_buffer;
 	//hex_to_bytes(_bytebstr1.byte_ptr())
@@ -184,3 +195,47 @@ ByteBlock Decrypt(BYTE *_buffer)
 	//_buffer = _bytebstr2.byte_ptr();
 	return  _bytebstr2;
 }
+
+MyDialog::MyDialog(wxFrame *a) : wxDialog(a, wxID_EDIT, wxT("Start"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+{
+	_dPanel = new wxPanel(this, wxID_EDIT);
+	_ipText = new wxTextCtrl(_dPanel, -1, wxT(""), wxPoint(30, 10), wxDefaultSize);
+	_ipText->AppendText(wxT("127.0.0.1"));
+	_servText = new wxTextCtrl(_dPanel, -1, wxT(""), wxPoint(30, 50), wxDefaultSize);
+	_servText->AppendText(wxT("7770"));
+	_nickText = new wxTextCtrl(_dPanel, -1, wxT(""), wxPoint(30, 90), wxDefaultSize);
+	_nickText->AppendText(wxT("Default"));
+	Centre();
+	_okButton = new wxButton(_dPanel, wxID_EXECUTE, wxT("Ok"), wxPoint(290, 180), wxDefaultSize);
+	
+	//Connect(wxID_EXECUTE, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyDialog::_okclick));
+	
+}
+
+/*
+MyDialog::MyDialog() : wxFrame(NULL, wxID_EDIT, wxT("Start"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+{
+	_dPanel = new wxPanel(this, -1);
+	_ipText = new wxTextCtrl(_dPanel, -1, wxT(""), wxPoint(30, 10), wxDefaultSize);
+	_ipText->AppendText(wxT("127.0.0.1"));
+	_servText = new wxTextCtrl(_dPanel, -1, wxT(""), wxPoint(30, 50), wxDefaultSize);
+	_servText->AppendText(wxT("7770"));
+	_nickText = new wxTextCtrl(_dPanel, -1, wxT(""), wxPoint(30, 90), wxDefaultSize);
+	_nickText->AppendText(wxT("Default"));
+	_okButton = new wxButton(_dPanel, wxID_EXECUTE, wxT("Далее"), wxPoint(290, 180), wxDefaultSize, wxBORDER_NONE);
+	Connect(wxID_EXECUTE, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyDialog::_okclick));
+	Centre();
+}*/
+
+void MyDialog::_okclick(wxCommandEvent& event)
+{
+	_ip = _ipText->GetValue();
+	_name = _nickText->GetValue();
+	_serv = _servText->GetValue();
+	handle = 0;
+	Close();
+}
+BEGIN_EVENT_TABLE(MyDialog, wxDialog)
+EVT_BUTTON(wxID_EXECUTE, MyDialog::_okclick)
+
+END_EVENT_TABLE()

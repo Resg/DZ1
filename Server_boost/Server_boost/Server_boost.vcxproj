@@ -80,7 +80,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\Users\Sergey\Documents\Visual Studio 2015\Projects\Libs\boost_1_62_0;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Sergey\Documents\Visual Studio 2015\Projects\Libs\boost_1_62_0\stage\lib;C:\Users\Sergey\Documents\Visual Studio 2015\Projects\Libs\boost_1_62_0\libs;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\Sergey\Documents\Visual Studio 2015\Projects\Libs\boost_1_62_0\stage\lib;C:\Users\Sergey\Documents\Visual Studio 2015\Projects\Libs\boost_1_62_0\stage;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -156,6 +156,7 @@
     <ClCompile Include="Kuznyechik.cpp" />
     <ClCompile Include="mycrypto.cpp" />
     <ClCompile Include="Server_boost.cpp" />
+    <ClCompile Include="Source.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
