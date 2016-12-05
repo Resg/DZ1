@@ -18,30 +18,42 @@ int con_count;
 
 void client_session(client_ptr client)
 {
-	BYTE _newdata[1024];
-	memset(_newdata, 0, 1024);
+	BYTE _newdata[496];
+	memset(_newdata, 0, 496);
+	client->sock().read_some(buffer(_newdata));
+	std::cout << _newdata << std::endl;
+	Sleep(100);
+	if (_newdata[0] == '1')
+	{
+		memset(_newdata, 0, 496);
+		client->sock().read_some(buffer(_newdata, 496));
+		std::cout << _newdata << std::endl;
+		client->key(_newdata);
+		std::cout << client->key() << std::endl;
+	}
+	memset(_newdata, 0, 496);
 	client->sock().read_some(buffer(_newdata));
 	client->username(_newdata);
 	try
 	{
 		while (client->sock().is_open())
 		{
-
 			client->_prepData();
-			memset(_newdata, 0, 1024);
+			memset(_newdata, 0, 496);
 			size_t len = client->sock().read_some(buffer(_newdata));
 			if (len > 0)
 			{
-				//std::cout << len << std::endl;
-				ByteBlock datablock = Decrypt(_newdata);
-				//std::cout << datablock.byte_ptr();
+				ByteBlock datablock = client->Decrypt(_newdata);
+				//BYTEstrcat(client->_data(), _newdata);
 				BYTEstrcat(client->_data(), datablock.byte_ptr());
-				datablock = Encrypt(client->_data());
-				for (array::iterator b = connections.begin(), e = connections.end(); b != e; ++b)
+				datablock = client->Encrypt(client->_data());
+				for (array::iterator b = ++connections.begin(), e = connections.end(); b != e; ++b)
 				{
-					//write((*b)->sock(), buffer(client->username(), client->username().size));
-					//write((*b)->sock(), buffer(datablock.byte_ptr(), datablock.size()));
-					(*b)->sock().write_some(buffer(datablock.byte_ptr(), datablock.size()));
+					if (((*b)->isalive)&&(BYTEstrcmp((*b)->key(), client->key())))
+					{
+						size_t a = write((*b)->sock(), buffer(datablock.byte_ptr(), datablock.size()));
+						std::cout << a << std::endl;
+					}
 				}
 			}
 			std::cout << client->_data() << std::endl;
@@ -54,8 +66,20 @@ void client_session(client_ptr client)
 		
 		std::cerr << e.what() << std::endl;
 		std::cout << "client disconnected" << std::endl;
-		array::iterator b = find(connections.begin(), connections.end(), client);
-		connections.erase(b);
+		client->isalive = 0;
+		/*
+		for (b = connections.begin(); b != connections.end(); ++b)
+		{
+
+			if (client->clientIter() == (*b)->clientIter())
+			{
+				client.reset();
+				b = connections.erase(b);
+				std::cout << "11111111111";
+				break;
+			}
+		}
+		std::cout << "11111111111";*/
 	}
 }
 
@@ -65,17 +89,27 @@ int main()
 	try
 	{
 		con_count = 0;
-		ip::tcp::endpoint ep(ip::tcp::v4(), 7770);
+		int _serv=10000;
+		while ((_serv > 9999) || (_serv < 1000))
+		{
+			std::cout << "Enter service" << std::endl;
+			std::cin >> _serv;
+			
+			if ((_serv > 9999) || (_serv < 1000))
+			{
+				std::cout << "wrong service" << std::endl;
+			}
+		}
+		ip::tcp::endpoint ep(ip::tcp::v4(), _serv);
 		ip::tcp::acceptor acc(service, ep);
-		//connect.bind;
-		//boost::asio::ip::tcp::acceptor acceptor(io_service);
+		client_ptr client0(new _client);
+		connections.push_back(client0);
 		for (;; con_count++)
 		{
-			std::cout << con_count;
 			client_ptr client(new _client);
 			acc.accept(client->sock());
-			//boost::recursive_mutex::scoped_lock lk(cs);
 			boost::thread(boost::bind(client_session, client));
+			std::cout << "client connected" << std::endl;
 			connections.push_back(client);
 			Sleep(100);
 		}

@@ -14,15 +14,18 @@
 
 
 
-void GetMsgFServer(wxSocketClient *_client, wxTextCtrl *_textbox, FILE *history);
+void GetMsgFServer(wxSocketClient *_client, wxTextCtrl *_textbox, FILE *history, BYTE *pass);
 BYTE *wxSToStr(wxString _buffer, BYTE *_nullptr);
-ByteBlock Encrypt(BYTE *_buffer);
-ByteBlock Decrypt(BYTE *_buffer);
+ByteBlock Encrypt(BYTE *_buffer, BYTE * key);
+ByteBlock Decrypt(BYTE *_buffer, BYTE * key);
+int BYTEstrlen(BYTE *str);
+void BYTEstrcat(BYTE *str1, BYTE *str2);
+void BYTEstrcat(BYTE *str1, char *str2);
 
 class MyThread : public wxThread
 {
 public:
-	MyThread(wxTextCtrl *textbox, wxSocketClient *client) :  _textbox(textbox), _client(client)
+	MyThread(wxTextCtrl *textbox, wxSocketClient *client, wxString pass) :  _textbox(textbox), _client(client), _pass(pass)
 	{
 	}
 	
@@ -30,6 +33,7 @@ public:
 private:
 	wxTextCtrl *_textbox;
 	wxSocketClient *_client;
+	wxString _pass;
 };
 class MyDialog : public wxDialog
 {
@@ -39,18 +43,21 @@ public:
 	wxString &IP() { return _ip; }
 	wxString &NAME() { return _name; }
 	wxString &SERV() { return _serv; }
+	wxString &PASS() { return _pass; }
 private:
 	wxPanel *_dPanel;
 	wxButtonBase *_okButton;
 	wxTextCtrl *_ipText;
 	wxTextCtrl *_servText;
 	wxTextCtrl *_nickText;
-	wxBoxSizer *_sizer1;
-	wxBoxSizer *_sizer2;
-	wxBoxSizer *_sizer3;
+	wxTextCtrl *_passText;
 	wxString _ip;
 	wxString _name;
+	wxStaticText *_EIp;
+	wxStaticText *_ENm;
+	wxStaticText *_ESrv;
 	wxString _serv;
+	wxString _pass;
 	DECLARE_EVENT_TABLE()
 };
 class GUI_CL : public wxFrame
@@ -62,6 +69,7 @@ public:
 	void SendMsgToServer(wxCommandEvent& event);
 	void ShutClient(wxCommandEvent& event);
 	void ChangeSettings(wxCommandEvent& event);
+	void ClearScreen(wxCommandEvent& event);
 
 private:
 	wxSocketClient *_client;
@@ -87,8 +95,10 @@ private:
 	wxTextEntryDialog *_dial3;
 	wxString ip;
 	wxString service;
+	wxString pass;
 	wxMenuBar *_menubar;
 	wxMenu *_menu;
+	wxMenu *_clear;
 	
 };
 
