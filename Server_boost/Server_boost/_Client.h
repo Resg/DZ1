@@ -12,13 +12,16 @@
 using namespace boost::asio;
 
 
-
+typedef boost::shared_ptr<_client> client_ptr;
+typedef std::vector<client_ptr> array;
+array connections;
 int BYTEstrlen(BYTE *str);
 void BYTEstrcat(BYTE *str1, BYTE *str2);
 void BYTEstrcat(BYTE *str1, char *str2);
 bool BYTEstrcmp(BYTE *str1, BYTE *str2);
 static io_service service;
 static int _intIter = 0;
+void client_session(client_ptr client);
 
 class _client : public boost::enable_shared_from_this<_client>
 {
@@ -35,7 +38,8 @@ public:
 	int &clientIter();
 	ByteBlock Encrypt(BYTE *_buffer);
 	ByteBlock Decrypt(BYTE *_buffer);
-	bool isalive;
+	bool isalive(bool val);
+	bool isalive() const;
 	~_client();
 private:
 	ip::tcp::socket _sock;
@@ -44,5 +48,6 @@ private:
 	BYTE *data;
 	BYTE *_name;
 	BYTE *_room;
+	bool _isalive;
 };
 

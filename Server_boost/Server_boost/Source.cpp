@@ -17,22 +17,22 @@ int BYTEstrlen(BYTE *str)
 
 void BYTEstrcat(BYTE *str1, BYTE *str2)
 {
-	for (int i = BYTEstrlen(str1), k = 0; ((i <= (BYTEstrlen(str1) + BYTEstrlen(str2))) && (i<496)); i++, k++)
+	for (int i = BYTEstrlen(str1), k = 0; ((i <= (BYTEstrlen(str1) + BYTEstrlen(str2))) && (i<1024)); i++, k++)
 		str1[i] = str2[k];
 }
 void BYTEstrcat(BYTE *str1, char *str2)
 {
-	for (int i = BYTEstrlen(str1), k = 0; ((i <= (BYTEstrlen(str1) + strlen(str2))) && (i<496)); i++, k++)
+	for (int i = BYTEstrlen(str1), k = 0; ((i <= (BYTEstrlen(str1) + strlen(str2))) && (i<1024)); i++, k++)
 		str1[i] = str2[k];
 }
 
 _client::_client() : _sock(service), _clientIter(_intIter)
 {
 	_intIter++;
-	isalive = 1;
+	_isalive = 1;
 	//std::cout << "iter: " << _clientIter << "1111111" << std::endl;
-	_name = new BYTE(496);
-	data = new BYTE(496);
+	_name = new BYTE(1024);
+	data = new BYTE(1024);
 	_key = new BYTE(32);
 }
 
@@ -83,10 +83,10 @@ _client::~_client()
 }
 ByteBlock _client::Encrypt(BYTE *_buffer)
 {
-	ByteBlock _bytebstr1(_buffer, 496);
+	ByteBlock _bytebstr1(_buffer, 1024);
 	ByteBlock _bytebstr2;
 	std::vector<ByteBlock> bytevect = split_blocks(_bytebstr1, 16);
-	std::vector<ByteBlock>::iterator _iter = bytevect.begin();
+	auto _iter = bytevect.begin();
 	ByteBlock _keyb(_key, 32);
 	Kuznyechik kuz(_keyb);
 	for (_iter = bytevect.begin(); _iter < bytevect.end(); _iter++)
@@ -100,7 +100,7 @@ ByteBlock _client::Encrypt(BYTE *_buffer)
 ByteBlock _client::Decrypt(BYTE *_buffer)
 {
 	
-	ByteBlock _bytebstr1(_buffer, 496);
+	ByteBlock _bytebstr1(_buffer, 1024);
 	ByteBlock _bytebstr2;
 	std::vector<ByteBlock> bytevect = split_blocks(_bytebstr1, 16);
 	std::vector<ByteBlock>::iterator _iter = bytevect.begin();
@@ -111,7 +111,6 @@ ByteBlock _client::Decrypt(BYTE *_buffer)
 		kuz.decrypt(*_iter, *_iter);
 	}
 	_bytebstr2 = join_blocks(bytevect);
-	std::cout << _bytebstr2.byte_ptr() << std::endl;
 	return  _bytebstr2;
 }
 
@@ -127,4 +126,61 @@ bool BYTEstrcmp(BYTE *str1, BYTE *str2)
 			return 0;
 	}
 	return a;
+}
+
+bool  _client::isalive(bool val)
+{
+	_isalive = val;
+	return _isalive;
+}
+
+bool  _client::isalive() const {	return _isalive;}
+
+void client_session(client_ptr client)
+{
+	BYTE _newdata[1024];
+	memset(_newdata, 0, 1024);
+	client->sock().read_some(buffer(_newdata));
+	Sleep(100);
+	if (_newdata[0] == '1')
+	{
+		memset(_newdata, 0, 1024);
+		client->sock().read_some(buffer(_newdata, 1024));
+		client->key(_newdata);
+	}
+	memset(_newdata, 0, 1024);
+	client->sock().read_some(buffer(_newdata));
+	client->username(_newdata);
+	try
+	{
+		while (client->sock().is_open())
+		{
+			client->_prepData();
+			memset(_newdata, 0, 1024);
+			size_t len = client->sock().read_some(buffer(_newdata));
+			if (len > 0)
+			{
+				ByteBlock datablock = client->Decrypt(_newdata);
+				//BYTEstrcat(client->_data(), _newdata);
+				BYTEstrcat(client->_data(), datablock.byte_ptr());
+				datablock = client->Encrypt(client->_data());
+				for (array::iterator b = ++connections.begin(), e = connections.end(); b != e; ++b)
+				{
+					if (((*b)->isalive()) && (BYTEstrcmp((*b)->key(), client->key())))
+					{
+						size_t a = write((*b)->sock(), buffer(datablock.byte_ptr(), datablock.size()));
+					}
+				}
+			}
+			std::cout << client->_data() << std::endl;
+
+			Sleep(100);
+		}
+	}
+	catch (std::exception& e)
+	{
+		std::cout << "client disconnected" << std::endl;
+		client->isalive(0);
+		connections.erase(std::remove_if(connections.begin(), connections.end(), boost::bind(&_client::isalive, _1)), connections.end());
+	}
 }

@@ -1,9 +1,10 @@
 ﻿  Source.cpp
-Source.cpp(177): warning C4018: <=: несоответствие типов со знаком и без знака
-Source.cpp(263): warning C4018: <=: несоответствие типов со знаком и без знака
+Source.cpp(168): warning C4018: <=: несоответствие типов со знаком и без знака
+Source.cpp(254): warning C4018: <=: несоответствие типов со знаком и без знака
+  _main.cpp
   Создание кода
-  3 of 1356 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+  7 of 1356 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    2 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Создание кода завершено
   Win32Project2.vcxproj -> C:\Users\Sergey\Desktop\gith\DZ1\Сlient_wx\Release\Win32Project2.exe

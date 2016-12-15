@@ -1,6 +1,7 @@
 
 #include "Header.h"
 FILE *history;
+bool _live=0;
 
 GUI_CL::GUI_CL() : wxFrame(NULL, wxID_ANY, wxT("Client"), wxDefaultPosition, wxSize(700, 600))
 {
@@ -12,8 +13,8 @@ GUI_CL::GUI_CL() : wxFrame(NULL, wxID_ANY, wxT("Client"), wxDefaultPosition, wxS
 	service = _MyDialog->SERV();
 	_name = _MyDialog->NAME();
 	addr.Hostname(ip);
-	BYTE buff[496];
-	memset(buff, 0, 496);
+	BYTE buff[1024];
+	memset(buff, 0, 1024);
 	wxSToStr(pass, buff);
 	ByteBlock datablock(buff, 32);
 	pass = hex_representation(datablock);
@@ -65,11 +66,14 @@ void GUI_CL::ClearScreen(wxCommandEvent& event)
 
 void GUI_CL::ShutClient(wxCommandEvent& event)
 {
+	_live = 0;
 	_client->ShutdownOutput();
 	_client->Discard();
-	if (thread->IsAlive())
-		thread->Kill();
 	_client->Destroy();
+	if (thread->IsAlive())
+	{
+		thread->Kill();
+	}
 	_disButton->Disable();
 	//_sendbox->Disable();
 	//_textbox->Disable(false);
@@ -91,49 +95,35 @@ void GUI_CL::ChangeSettings(wxCommandEvent& event)
 void GUI_CL::SendMsgToServer(wxCommandEvent& event)
 {
 	buffer = _sendbox->GetValue();
-	BYTE _strbuff[496];
+	BYTE _strbuff[1024];
 	wxSToStr(buffer, _strbuff);
-	BYTE _1passbuff[496];
+	BYTE _1passbuff[1024];
 	wxSToStr(pass, _1passbuff);
 	ByteBlock asd = Encrypt(_strbuff, _1passbuff);
-	//_strbuff = asd.byte_ptr();
-	_client->Write(asd.byte_ptr(), 496);
+	_client->Write(asd.byte_ptr(), 1024);
 	_sendbox->Clear();
-	/*buffer = _sendbox->GetValue();
-	_sendbox->Clear();
-	BYTE _strbuff[496];
-	wxSToStr(buffer, _strbuff);
-	BYTE _1passbuff[33];
-	wxSToStr(pass, _1passbuff);
-	ByteBlock asd = Encrypt(_strbuff, _1passbuff);
-	memset(_strbuff, 0, 496);
-	for (int i = 0; i < asd.size(); i++)
-		_strbuff[i] = asd.byte_ptr()[i];
-	_client->Write(_strbuff, 496);*/
 }
 
 void GUI_CL::ConnectToServer(wxCommandEvent& event)
 {
-	//wxString ip = _sendbox->GetValue();
-	//_sendbox->Clear();
-	//wxString service = "7770";
+	_live = 1;
 	addr.Hostname(ip);
-	BYTE buff[496];
-	memset(buff, 0, 496);
+	BYTE buff[1024];
+	memset(buff, 0, 1024);
 	addr.Service(service);
 	_client = new wxSocketClient(wxSOCKET_NONE);
 	_client->Connect(addr, true);
 	*_textbox << ("Connected\n");
 	buff[0] = '1';
-	_client->Write(buff, 496);
+	_client->Write(buff, 1024);
 	Sleep(110);
-	memset(buff, 0, 496);
+	memset(buff, 0, 1024);
 	wxSToStr(pass, buff);
-	_client->Write(buff, 496);
-	memset(buff, 0, 496);
+	_client->Write(buff, 1024);
+	memset(buff, 0, 1024);
 	Sleep(110);
 	wxSToStr(_name, buff);
-	_client->Write(buff, 496);
+	_client->Write(buff, 1024);
 	_conButton->Enable(false);
 	_sendbox->Enable();
 	_textbox->Enable();
@@ -159,14 +149,15 @@ void *MyThread::Entry()
 
 void GetMsgFServer(wxSocketClient *_client, wxTextCtrl *_textbox, FILE *history, BYTE *pass)
 {
-	BYTE *_buffer = new BYTE[496];
-	for (;; Sleep(100))
+	BYTE *_buffer = new BYTE[1024];
+	while(_live)
 	{
-		memset(_buffer, 0, 496);
-		_client->Read(_buffer, 496);
+		memset(_buffer, 0, 1024);
+		_client->Read(_buffer, 1024);
 		ByteBlock datablock = Decrypt(_buffer, pass);
 		*_textbox << (datablock.byte_ptr());
 		*_textbox << ("\n");
+		Sleep(100);
 	}
 	delete _buffer;
 }
@@ -187,7 +178,7 @@ BYTE *wxSToStr(wxString _buffer, BYTE *_nullptr)
 
 ByteBlock Encrypt(BYTE *_buffer, BYTE * key)
 {
-	ByteBlock _bytebstr1(_buffer, 496);
+	ByteBlock _bytebstr1(_buffer, 1024);
 	ByteBlock _bytebstr2;
 	std::vector<ByteBlock> bytevect = split_blocks(_bytebstr1, 16);
 	std::vector<ByteBlock>::iterator _iter = bytevect.begin();
@@ -204,7 +195,7 @@ ByteBlock Encrypt(BYTE *_buffer, BYTE * key)
 
 ByteBlock Decrypt(BYTE *_buffer, BYTE * key)
 {
-	ByteBlock _bytebstr1(_buffer, 496);
+	ByteBlock _bytebstr1(_buffer, 1024);
 	ByteBlock _bytebstr2;
 	std::vector<ByteBlock> bytevect = split_blocks(_bytebstr1, 16);
 	std::vector<ByteBlock>::iterator _iter = bytevect.begin();
@@ -255,12 +246,12 @@ int BYTEstrlen(BYTE *str)
 
 void BYTEstrcat(BYTE *str1, BYTE *str2)
 {
-	for (int i = BYTEstrlen(str1), k = 0; ((i <= (BYTEstrlen(str1) + BYTEstrlen(str2))) && (i<496)); i++, k++)
+	for (int i = BYTEstrlen(str1), k = 0; ((i <= (BYTEstrlen(str1) + BYTEstrlen(str2))) && (i<1024)); i++, k++)
 		str1[i] = str2[k];
 }
 void BYTEstrcat(BYTE *str1, char *str2)
 {
-	for (int i = BYTEstrlen(str1), k = 0; ((i <= (BYTEstrlen(str1) + strlen(str2))) && (i<496)); i++, k++)
+	for (int i = BYTEstrlen(str1), k = 0; ((i <= (BYTEstrlen(str1) + strlen(str2))) && (i<1024)); i++, k++)
 		str1[i] = str2[k];
 }
 

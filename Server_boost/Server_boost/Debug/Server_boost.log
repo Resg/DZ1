@@ -4,4 +4,7 @@ c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\source.cpp(34): warni
 c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\source.cpp(34): warning C4309: инициализация: усечение константного значения
 c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\source.cpp(35): warning C4305: инициализация: усечение из "int" к "BYTE"
 c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\source.cpp(35): warning C4309: инициализация: усечение константного значения
+  Server_boost.cpp
+c:\users\sergey\desktop\gith\dz1\server_boost\server_boost\server_boost.cpp(60): warning C4101: e: неиспользованная локальная переменная
+  Создание кода...
   Server_boost.vcxproj -> C:\Users\Sergey\Desktop\gith\DZ1\Server_boost\Debug\Server_boost.exe
